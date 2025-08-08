@@ -1,0 +1,1961 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة مصروفات السيارات - RASHID INDUSTRIAL CO.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://apis.google.com/js/api.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- Meta tags for PWA -->
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="إدارة السيارات">
+    <meta name="msapplication-TileColor" content="#667eea">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="نظام شامل لإدارة مصروفات السيارات مع تحليل ذكي وتقارير مفصلة - RASHID INDUSTRIAL CO.">
+    <meta name="keywords" content="إدارة السيارات, مصروفات, محاسبة, تقارير, ذكاء اصطناعي, سيارات">
+    <meta name="author" content="محمد مبروك عطية - Mohamed Mabrouk Attia">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://your-domain.com/">
+    <meta property="og:title" content="نظام إدارة مصروفات السيارات - RASHID INDUSTRIAL CO.">
+    <meta property="og:description" content="نظام شامل لإدارة مصروفات السيارات مع تحليل ذكي وتقارير مفصلة">
+    <meta property="og:image" content="https://your-domain.com/screenshot.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://your-domain.com/">
+    <meta property="twitter:title" content="نظام إدارة مصروفات السيارات">
+    <meta property="twitter:description" content="نظام شامل لإدارة مصروفات السيارات مع تحليل ذكي وتقارير مفصلة">
+    <meta property="twitter:image" content="https://your-domain.com/screenshot.png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        .login-bg {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%),
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><pattern id="cars" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="80" r="1.5" fill="rgba(255,255,255,0.08)"/><circle cx="50" cy="60" r="1" fill="rgba(255,255,255,0.06)"/></pattern></defs><rect width="100%" height="100%" fill="url(%23cars)"/></svg>');
+            background-size: cover, 100px 100px;
+            background-position: center, 0 0;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .login-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><g fill="rgba(255,255,255,0.03)"><path d="M20 20h40v20H20z"/><path d="M15 25h10v10H15z"/><path d="M65 25h10v10H65z"/><circle cx="25" cy="45" r="3"/><circle cx="55" cy="45" r="3"/></g></svg>');
+            background-size: 200px 200px;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(1deg); }
+        }
+        
+        .card-shadow {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .nav-button {
+            transition: all 0.3s ease;
+        }
+        
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .active-nav {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .currency::after {
+            content: " ريال";
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #495057;
+            border: 1px solid #dee2e6;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            border: none;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: right;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid;
+        }
+        
+        .stats-card.income {
+            border-left-color: #28a745;
+        }
+        
+        .stats-card.expense {
+            border-left-color: #dc3545;
+        }
+        
+        .stats-card.balance {
+            border-left-color: #007bff;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .file-upload {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .file-upload:hover {
+            border-color: #667eea;
+            background-color: #f8f9ff;
+        }
+        
+        .file-upload.dragover {
+            border-color: #667eea;
+            background-color: #f0f4ff;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- شاشة الدخول -->
+    <div id="loginScreen" class="login-bg flex items-center justify-center relative z-10">
+        <div class="bg-white p-10 rounded-2xl card-shadow w-full max-w-md relative z-20 backdrop-blur-sm bg-opacity-95">
+            <div class="text-center mb-8">
+                <div class="mb-4">
+                    <i class="fas fa-car text-4xl text-blue-600 mb-2"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">RASHID INDUSTRIAL CO.</h1>
+                <h2 class="text-lg text-gray-600 mb-1">إدارة مصروفات السيارات</h2>
+                <div class="w-16 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto rounded-full"></div>
+            </div>
+
+            <form id="loginForm" class="space-y-6">
+                <div class="relative">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-lock ml-2"></i>
+                        كلمة المرور
+                    </label>
+                    <input type="password" id="passwordInput" class="form-input pl-10" placeholder="أدخل كلمة المرور" required>
+                    <i class="fas fa-key absolute left-3 top-10 text-gray-400"></i>
+                </div>
+
+                <button type="submit" class="btn-primary w-full py-3 text-lg font-semibold">
+                    <i class="fas fa-sign-in-alt ml-2"></i>
+                    دخول
+                </button>
+
+                <div class="text-center">
+                    <button type="button" class="text-blue-600 hover:text-blue-800 text-sm font-medium" onclick="showForgotPassword()">
+                        <i class="fas fa-question-circle ml-1"></i>
+                        نسيت كلمة المرور؟
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-6 pt-6 border-t border-gray-200 text-center">
+                <p class="text-xs text-gray-500">
+                    نظام إدارة مصروفات السيارات المتقدم
+                </p>
+                <p class="text-xs text-gray-400 mt-1">
+                    مصمم ومطور البرنامج: محمد مبروك عطية
+                </p>
+                <p class="text-xs text-gray-400">
+                    Designed & Developed by: Mohamed Mabrouk Attia
+                </p>
+                <p class="text-xs text-gray-400 mt-1">
+                    جميع الحقوق محفوظة © 2024
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- الواجهة الرئيسية -->
+    <div id="mainApp" class="hidden">
+        <!-- الهيدر -->
+        <header class="bg-white shadow-lg border-b-2 border-blue-100">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-car text-3xl text-blue-600 ml-3"></i>
+                            <div>
+                                <h1 class="text-2xl font-bold text-gray-800">RASHID INDUSTRIAL CO.</h1>
+                                <p class="text-sm text-gray-600">نظام إدارة مصروفات السيارات</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-4">
+                        <!-- عرض الوقت والتاريخ -->
+                        <div class="text-left hidden md:block">
+                            <div id="currentTime" class="text-sm font-semibold text-gray-700"></div>
+                            <div id="currentDate" class="text-xs text-gray-500"></div>
+                        </div>
+
+                        <!-- زر الإعدادات -->
+                        <button onclick="showSettings()" class="btn-secondary p-2" title="الإعدادات">
+                            <i class="fas fa-cog"></i>
+                        </button>
+
+                        <!-- زر الإعدادات المتقدمة -->
+                        <button onclick="showAdvancedSettings()" class="btn-secondary p-2" title="الإعدادات المتقدمة">
+                            <i class="fas fa-cogs"></i>
+                        </button>
+
+                        <!-- زر الخروج -->
+                        <button onclick="logout()" class="btn-danger">
+                            <i class="fas fa-sign-out-alt ml-2"></i>
+                            خروج
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- شريط التنقل -->
+        <nav class="bg-gradient-to-r from-blue-50 to-purple-50 shadow-md border-b">
+            <div class="container mx-auto px-4">
+                <div class="flex flex-wrap gap-3 py-4 justify-center lg:justify-start">
+                    <button onclick="showPage('charts')" class="nav-button btn-secondary active-nav" id="nav-charts">
+                        <i class="fas fa-chart-bar ml-2"></i>
+                        <span class="hidden sm:inline">الرسوم البيانية</span>
+                        <span class="sm:hidden">الرسوم</span>
+                    </button>
+                    <button onclick="showPage('treasury')" class="nav-button btn-secondary" id="nav-treasury">
+                        <i class="fas fa-wallet ml-2"></i>
+                        <span>الخزينة</span>
+                    </button>
+                    <button onclick="showPage('employees')" class="nav-button btn-secondary" id="nav-employees">
+                        <i class="fas fa-users ml-2"></i>
+                        <span class="hidden sm:inline">إدارة الموظفين</span>
+                        <span class="sm:hidden">الموظفين</span>
+                    </button>
+                    <button onclick="showPage('cars')" class="nav-button btn-secondary" id="nav-cars">
+                        <i class="fas fa-car ml-2"></i>
+                        <span class="hidden sm:inline">بيانات السيارات</span>
+                        <span class="sm:hidden">السيارات</span>
+                    </button>
+                    <button onclick="showPage('expenses')" class="nav-button btn-secondary" id="nav-expenses">
+                        <i class="fas fa-plus-circle ml-2"></i>
+                        <span class="hidden sm:inline">إدخال المصروفات</span>
+                        <span class="sm:hidden">إدخال</span>
+                    </button>
+                    <button onclick="showPage('expenseList')" class="nav-button btn-secondary" id="nav-expenseList">
+                        <i class="fas fa-list ml-2"></i>
+                        <span class="hidden sm:inline">قائمة المصروفات</span>
+                        <span class="sm:hidden">القائمة</span>
+                    </button>
+                    <button onclick="showPage('reports')" class="nav-button btn-secondary" id="nav-reports">
+                        <i class="fas fa-file-alt ml-2"></i>
+                        <span>التقارير</span>
+                    </button>
+                    <button onclick="showPage('aiAnalysis')" class="nav-button btn-secondary" id="nav-aiAnalysis">
+                        <i class="fas fa-robot ml-2"></i>
+                        <span class="hidden sm:inline">تحليل الصيانة</span>
+                        <span class="sm:hidden">التحليل</span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- المحتوى الرئيسي -->
+        <main class="container mx-auto px-4 py-6">
+            <!-- صفحة الرسوم البيانية -->
+            <div id="chartsPage" class="page-content">
+                <!-- إحصائيات سريعة -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div class="stats-card income">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600">إجمالي المصروفات</p>
+                                <p class="text-2xl font-bold text-gray-800" id="totalExpensesAmount">0 ريال</p>
+                            </div>
+                            <i class="fas fa-money-bill-wave text-2xl text-green-500"></i>
+                        </div>
+                    </div>
+
+                    <div class="stats-card expense">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600">عدد السيارات</p>
+                                <p class="text-2xl font-bold text-gray-800" id="totalCarsCount">0</p>
+                            </div>
+                            <i class="fas fa-car text-2xl text-red-500"></i>
+                        </div>
+                    </div>
+
+                    <div class="stats-card balance">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600">متوسط المصروف الشهري</p>
+                                <p class="text-2xl font-bold text-gray-800" id="avgMonthlyExpense">0 ريال</p>
+                            </div>
+                            <i class="fas fa-chart-line text-2xl text-blue-500"></i>
+                        </div>
+                    </div>
+
+                    <div class="stats-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600">آخر تحديث</p>
+                                <p class="text-sm font-semibold text-gray-800" id="lastUpdateTime">الآن</p>
+                            </div>
+                            <i class="fas fa-clock text-2xl text-purple-500"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- المخططات -->
+                <div class="bg-white rounded-lg card-shadow p-6">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4 md:mb-0">الرسوم البيانية</h2>
+
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <select id="chartSelector" class="form-input" onchange="updateChart()">
+                                <option value="">اختر نوع المخطط...</option>
+                                <option value="totalExpensesByCarBar">إجمالي المصروفات لكل سيارة</option>
+                                <option value="expensesByTypeDoughnut">توزيع المصروفات حسب النوع</option>
+                                <option value="expensesOverTimeLine">المصروفات بمرور الوقت</option>
+                                <option value="top5ExpensesHorizontalBar">أكبر 5 مصروفات</option>
+                                <option value="monthlyComparison">مقارنة شهرية</option>
+                            </select>
+
+                            <button onclick="refreshChartData()" class="btn-secondary whitespace-nowrap">
+                                <i class="fas fa-sync-alt ml-2"></i>
+                                تحديث البيانات
+                            </button>
+
+                            <button onclick="exportChart()" class="btn-primary whitespace-nowrap">
+                                <i class="fas fa-download ml-2"></i>
+                                تصدير المخطط
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="chart-container bg-gray-50 rounded-lg p-4">
+                        <canvas id="mainChart"></canvas>
+                        <div id="noDataMessage" class="text-center py-12 hidden">
+                            <i class="fas fa-chart-bar text-4xl text-gray-300 mb-4"></i>
+                            <p class="text-gray-500">لا توجد بيانات لعرضها</p>
+                            <p class="text-sm text-gray-400 mt-2">قم بإضافة بعض المصروفات أولاً</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- باقي الصفحات ستتم إضافتها لاحقاً -->
+            <div id="treasuryPage" class="page-content hidden">
+                <!-- تحليل فوري للخزينة -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="stats-card income">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600">إجمالي المستلم</p>
+                                <p class="text-2xl font-bold text-green-600" id="totalReceived">0 ريال</p>
+                            </div>
+                            <i class="fas fa-arrow-down text-2xl text-green-500"></i>
+                        </div>
+                    </div>
+
+                    <div class="stats-card expense">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600">إجمالي المنصرف</p>
+                                <p class="text-2xl font-bold text-red-600" id="totalSpent">0 ريال</p>
+                            </div>
+                            <i class="fas fa-arrow-up text-2xl text-red-500"></i>
+                        </div>
+                    </div>
+
+                    <div class="stats-card balance">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600">الرصيد الحالي</p>
+                                <p class="text-2xl font-bold text-blue-600" id="currentBalance">0 ريال</p>
+                            </div>
+                            <i class="fas fa-wallet text-2xl text-blue-500"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- إضافة مبلغ جديد -->
+                    <div class="bg-white rounded-lg card-shadow p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">
+                            <i class="fas fa-plus-circle ml-2 text-green-500"></i>
+                            إضافة مبلغ مستلم
+                        </h3>
+
+                        <form id="treasuryForm" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">المبلغ (ريال)</label>
+                                <input type="number" id="treasuryAmount" class="form-input" placeholder="أدخل المبلغ" required min="0" step="0.01">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">مصدر المبلغ</label>
+                                <select id="treasurySource" class="form-input" required>
+                                    <option value="">اختر مصدر المبلغ...</option>
+                                    <option value="رصيد افتتاحي">رصيد افتتاحي</option>
+                                    <option value="إيداع نقدي">إيداع نقدي</option>
+                                    <option value="تحويل بنكي">تحويل بنكي</option>
+                                    <option value="استرداد">استرداد</option>
+                                    <option value="أخرى">أخرى</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">ملاحظات</label>
+                                <textarea id="treasuryNotes" class="form-input" rows="3" placeholder="أدخل ملاحظات إضافية (اختياري)"></textarea>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">التاريخ</label>
+                                <input type="date" id="treasuryDate" class="form-input" required>
+                            </div>
+
+                            <button type="submit" class="btn-primary w-full">
+                                <i class="fas fa-save ml-2"></i>
+                                إضافة المبلغ
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- سجل المبالغ المستلمة -->
+                    <div class="bg-white rounded-lg card-shadow p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-gray-800">
+                                <i class="fas fa-history ml-2 text-blue-500"></i>
+                                سجل المبالغ المستلمة
+                            </h3>
+                            <button onclick="exportTreasuryData()" class="btn-secondary text-sm">
+                                <i class="fas fa-download ml-1"></i>
+                                تصدير
+                            </button>
+                        </div>
+
+                        <div class="max-h-96 overflow-y-auto">
+                            <div id="treasuryTransactions" class="space-y-3">
+                                <!-- سيتم ملء هذا القسم بالبيانات -->
+                            </div>
+
+                            <div id="noTreasuryData" class="text-center py-8 text-gray-500 hidden">
+                                <i class="fas fa-inbox text-3xl mb-2"></i>
+                                <p>لا توجد معاملات مالية</p>
+                                <p class="text-sm">قم بإضافة أول مبلغ</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- تحليل مفصل للخزينة -->
+                <div class="bg-white rounded-lg card-shadow p-6 mt-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">
+                        <i class="fas fa-chart-pie ml-2 text-purple-500"></i>
+                        تحليل مفصل للخزينة
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-green-600 font-medium">متوسط الإيداع</p>
+                                    <p class="text-lg font-bold text-green-700" id="avgDeposit">0 ريال</p>
+                                </div>
+                                <i class="fas fa-chart-line text-green-500"></i>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-red-50 to-red-100 p-4 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-red-600 font-medium">متوسط المصروف</p>
+                                    <p class="text-lg font-bold text-red-700" id="avgExpense">0 ريال</p>
+                                </div>
+                                <i class="fas fa-chart-line text-red-500"></i>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-blue-600 font-medium">عدد المعاملات</p>
+                                    <p class="text-lg font-bold text-blue-700" id="transactionCount">0</p>
+                                </div>
+                                <i class="fas fa-exchange-alt text-blue-500"></i>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-purple-600 font-medium">صافي التغيير</p>
+                                    <p class="text-lg font-bold text-purple-700" id="netChange">0 ريال</p>
+                                </div>
+                                <i class="fas fa-balance-scale text-purple-500"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="employeesPage" class="page-content hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- نموذج إضافة موظف جديد -->
+                    <div class="bg-white rounded-lg card-shadow p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">
+                            <i class="fas fa-user-plus ml-2 text-blue-500"></i>
+                            إضافة موظف جديد
+                        </h3>
+
+                        <form id="employeeForm" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">كود الموظف</label>
+                                <input type="text" id="employeeCode" class="form-input" placeholder="أدخل كود الموظف" required>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">اسم الموظف</label>
+                                <input type="text" id="employeeName" class="form-input" placeholder="أدخل اسم الموظف" required>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">الوظيفة</label>
+                                <select id="employeeJob" class="form-input" required>
+                                    <option value="">اختر الوظيفة...</option>
+                                    <option value="سائق">سائق</option>
+                                    <option value="فني صيانة">فني صيانة</option>
+                                    <option value="مشرف">مشرف</option>
+                                    <option value="مدير">مدير</option>
+                                    <option value="محاسب">محاسب</option>
+                                    <option value="أخرى">أخرى</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">المنطقة</label>
+                                <select id="employeeRegion" class="form-input" required>
+                                    <option value="">اختر المنطقة...</option>
+                                    <option value="الرياض">الرياض</option>
+                                    <option value="جدة">جدة</option>
+                                    <option value="الدمام">الدمام</option>
+                                    <option value="مكة المكرمة">مكة المكرمة</option>
+                                    <option value="المدينة المنورة">المدينة المنورة</option>
+                                    <option value="الطائف">الطائف</option>
+                                    <option value="تبوك">تبوك</option>
+                                    <option value="أخرى">أخرى</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">رقم الهاتف</label>
+                                <input type="tel" id="employeePhone" class="form-input" placeholder="05xxxxxxxx">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">البريد الإلكتروني</label>
+                                <input type="email" id="employeeEmail" class="form-input" placeholder="example@email.com">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">تاريخ التوظيف</label>
+                                <input type="date" id="employeeHireDate" class="form-input" required>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">الراتب الأساسي (ريال)</label>
+                                <input type="number" id="employeeSalary" class="form-input" placeholder="0" min="0" step="0.01">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">ملاحظات</label>
+                                <textarea id="employeeNotes" class="form-input" rows="3" placeholder="ملاحظات إضافية (اختياري)"></textarea>
+                            </div>
+
+                            <div class="flex space-x-2">
+                                <button type="submit" class="btn-primary flex-1">
+                                    <i class="fas fa-save ml-2"></i>
+                                    حفظ الموظف
+                                </button>
+                                <button type="button" onclick="resetEmployeeForm()" class="btn-secondary">
+                                    <i class="fas fa-undo ml-2"></i>
+                                    إعادة تعيين
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- إحصائيات الموظفين -->
+                    <div class="space-y-6">
+                        <!-- إحصائيات سريعة -->
+                        <div class="bg-white rounded-lg card-shadow p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">
+                                <i class="fas fa-chart-bar ml-2 text-green-500"></i>
+                                إحصائيات الموظفين
+                            </h3>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-blue-50 p-4 rounded-lg">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm text-blue-600">إجمالي الموظفين</p>
+                                            <p class="text-2xl font-bold text-blue-700" id="totalEmployees">0</p>
+                                        </div>
+                                        <i class="fas fa-users text-blue-500"></i>
+                                    </div>
+                                </div>
+
+                                <div class="bg-green-50 p-4 rounded-lg">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm text-green-600">إجمالي الرواتب</p>
+                                            <p class="text-lg font-bold text-green-700" id="totalSalaries">0 ريال</p>
+                                        </div>
+                                        <i class="fas fa-money-bill-wave text-green-500"></i>
+                                    </div>
+                                </div>
+
+                                <div class="bg-purple-50 p-4 rounded-lg">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm text-purple-600">متوسط الراتب</p>
+                                            <p class="text-lg font-bold text-purple-700" id="avgSalary">0 ريال</p>
+                                        </div>
+                                        <i class="fas fa-calculator text-purple-500"></i>
+                                    </div>
+                                </div>
+
+                                <div class="bg-orange-50 p-4 rounded-lg">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm text-orange-600">أحدث موظف</p>
+                                            <p class="text-sm font-bold text-orange-700" id="latestEmployee">-</p>
+                                        </div>
+                                        <i class="fas fa-user-clock text-orange-500"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- أدوات الإدارة -->
+                        <div class="bg-white rounded-lg card-shadow p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">
+                                <i class="fas fa-tools ml-2 text-purple-500"></i>
+                                أدوات الإدارة
+                            </h3>
+
+                            <div class="space-y-3">
+                                <button onclick="exportEmployees()" class="btn-success w-full">
+                                    <i class="fas fa-file-excel ml-2"></i>
+                                    تصدير إلى Excel
+                                </button>
+
+                                <div class="relative">
+                                    <input type="file" id="importEmployeesFile" accept=".xlsx,.xls" class="hidden" onchange="importEmployees(event)">
+                                    <button onclick="document.getElementById('importEmployeesFile').click()" class="btn-primary w-full">
+                                        <i class="fas fa-file-import ml-2"></i>
+                                        استيراد من Excel
+                                    </button>
+                                </div>
+
+                                <button onclick="clearAllEmployees()" class="btn-danger w-full">
+                                    <i class="fas fa-trash-alt ml-2"></i>
+                                    حذف جميع الموظفين
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- جدول الموظفين -->
+                <div class="bg-white rounded-lg card-shadow p-6 mt-6">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4 md:mb-0">
+                            <i class="fas fa-table ml-2 text-blue-500"></i>
+                            قائمة الموظفين
+                        </h3>
+
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <input type="text" id="employeeSearch" class="form-input" placeholder="البحث في الموظفين..." onkeyup="filterEmployees()">
+                            <select id="employeeFilterJob" class="form-input" onchange="filterEmployees()">
+                                <option value="">جميع الوظائف</option>
+                                <option value="سائق">سائق</option>
+                                <option value="فني صيانة">فني صيانة</option>
+                                <option value="مشرف">مشرف</option>
+                                <option value="مدير">مدير</option>
+                                <option value="محاسب">محاسب</option>
+                                <option value="أخرى">أخرى</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>الكود</th>
+                                    <th>الاسم</th>
+                                    <th>الوظيفة</th>
+                                    <th>المنطقة</th>
+                                    <th>الهاتف</th>
+                                    <th>الراتب</th>
+                                    <th>تاريخ التوظيف</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="employeesTableBody">
+                                <!-- سيتم ملء هذا القسم بالبيانات -->
+                            </tbody>
+                        </table>
+
+                        <div id="noEmployeesData" class="text-center py-8 text-gray-500 hidden">
+                            <i class="fas fa-users text-4xl mb-4"></i>
+                            <p>لا يوجد موظفين مسجلين</p>
+                            <p class="text-sm">قم بإضافة أول موظف</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="carsPage" class="page-content hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- نموذج إضافة سيارة جديدة -->
+                    <div class="bg-white rounded-lg card-shadow p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">
+                            <i class="fas fa-car-side ml-2 text-blue-500"></i>
+                            إضافة سيارة جديدة
+                        </h3>
+
+                        <form id="carForm" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">لوحة الأرقام *</label>
+                                <input type="text" id="carPlateNumber" class="form-input" placeholder="مثال: أ ب ج 1234" required onchange="autoFillCarData()">
+                                <p class="text-xs text-gray-500 mt-1">سيتم تعبئة البيانات تلقائياً إذا كانت السيارة مسجلة مسبقاً</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">اسم السيارة *</label>
+                                <input type="text" id="carName" class="form-input" placeholder="مثال: كامري 2023" required>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">العلامة التجارية *</label>
+                                <select id="carBrand" class="form-input" required>
+                                    <option value="">اختر العلامة التجارية...</option>
+                                    <option value="تويوتا">تويوتا</option>
+                                    <option value="هوندا">هوندا</option>
+                                    <option value="نيسان">نيسان</option>
+                                    <option value="هيونداي">هيونداي</option>
+                                    <option value="كيا">كيا</option>
+                                    <option value="فورد">فورد</option>
+                                    <option value="شيفروليه">شيفروليه</option>
+                                    <option value="مرسيدس">مرسيدس</option>
+                                    <option value="بي إم دبليو">بي إم دبليو</option>
+                                    <option value="أودي">أودي</option>
+                                    <option value="لكزس">لكزس</option>
+                                    <option value="إنفينيتي">إنفينيتي</option>
+                                    <option value="أخرى">أخرى</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">سنة الصنع *</label>
+                                <select id="carYear" class="form-input" required>
+                                    <option value="">اختر السنة...</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">نوع السيارة *</label>
+                                <select id="carType" class="form-input" required>
+                                    <option value="">اختر النوع...</option>
+                                    <option value="سيدان">سيدان</option>
+                                    <option value="هاتشباك">هاتشباك</option>
+                                    <option value="SUV">SUV</option>
+                                    <option value="كوبيه">كوبيه</option>
+                                    <option value="بيك أب">بيك أب</option>
+                                    <option value="فان">فان</option>
+                                    <option value="شاحنة">شاحنة</option>
+                                    <option value="حافلة">حافلة</option>
+                                    <option value="أخرى">أخرى</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">المالك *</label>
+                                <input type="text" id="carOwner" class="form-input" placeholder="اسم المالك" required>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">السائق المعتاد</label>
+                                <select id="carDriver" class="form-input">
+                                    <option value="">اختر السائق...</option>
+                                    <!-- سيتم ملؤها من قائمة الموظفين -->
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">لون السيارة</label>
+                                <select id="carColor" class="form-input">
+                                    <option value="">اختر اللون...</option>
+                                    <option value="أبيض">أبيض</option>
+                                    <option value="أسود">أسود</option>
+                                    <option value="فضي">فضي</option>
+                                    <option value="رمادي">رمادي</option>
+                                    <option value="أحمر">أحمر</option>
+                                    <option value="أزرق">أزرق</option>
+                                    <option value="أخضر">أخضر</option>
+                                    <option value="بني">بني</option>
+                                    <option value="ذهبي">ذهبي</option>
+                                    <option value="أخرى">أخرى</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">رقم الشاسيه</label>
+                                <input type="text" id="carChassisNumber" class="form-input" placeholder="رقم الشاسيه">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">رقم المحرك</label>
+                                <input type="text" id="carEngineNumber" class="form-input" placeholder="رقم المحرك">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">تاريخ انتهاء التأمين</label>
+                                <input type="date" id="carInsuranceExpiry" class="form-input">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">تاريخ انتهاء الاستمارة</label>
+                                <input type="date" id="carRegistrationExpiry" class="form-input">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">تاريخ آخر فحص دوري</label>
+                                <input type="date" id="carLastInspection" class="form-input">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">عداد الكيلومترات الحالي</label>
+                                <input type="number" id="carMileage" class="form-input" placeholder="0" min="0">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">ملاحظات</label>
+                                <textarea id="carNotes" class="form-input" rows="3" placeholder="ملاحظات إضافية (اختياري)"></textarea>
+                            </div>
+
+                            <div class="flex space-x-2">
+                                <button type="submit" class="btn-primary flex-1">
+                                    <i class="fas fa-save ml-2"></i>
+                                    حفظ السيارة
+                                </button>
+                                <button type="button" onclick="resetCarForm()" class="btn-secondary">
+                                    <i class="fas fa-undo ml-2"></i>
+                                    إعادة تعيين
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- إحصائيات السيارات -->
+                    <div class="space-y-6">
+                        <!-- إحصائيات سريعة -->
+                        <div class="bg-white rounded-lg card-shadow p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">
+                                <i class="fas fa-chart-bar ml-2 text-green-500"></i>
+                                إحصائيات السيارات
+                            </h3>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-blue-50 p-4 rounded-lg">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm text-blue-600">إجمالي السيارات</p>
+                                            <p class="text-2xl font-bold text-blue-700" id="totalCars">0</p>
+                                        </div>
+                                        <i class="fas fa-car text-blue-500"></i>
+                                    </div>
+                                </div>
+
+                                <div class="bg-green-50 p-4 rounded-lg">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm text-green-600">تأمين ساري</p>
+                                            <p class="text-2xl font-bold text-green-700" id="validInsurance">0</p>
+                                        </div>
+                                        <i class="fas fa-shield-alt text-green-500"></i>
+                                    </div>
+                                </div>
+
+                                <div class="bg-yellow-50 p-4 rounded-lg">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm text-yellow-600">تأمين منتهي</p>
+                                            <p class="text-2xl font-bold text-yellow-700" id="expiredInsurance">0</p>
+                                        </div>
+                                        <i class="fas fa-exclamation-triangle text-yellow-500"></i>
+                                    </div>
+                                </div>
+
+                                <div class="bg-purple-50 p-4 rounded-lg">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm text-purple-600">أحدث سيارة</p>
+                                            <p class="text-sm font-bold text-purple-700" id="latestCar">-</p>
+                                        </div>
+                                        <i class="fas fa-clock text-purple-500"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- أدوات الإدارة -->
+                        <div class="bg-white rounded-lg card-shadow p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">
+                                <i class="fas fa-tools ml-2 text-purple-500"></i>
+                                أدوات الإدارة
+                            </h3>
+
+                            <div class="space-y-3">
+                                <button onclick="exportCars()" class="btn-success w-full">
+                                    <i class="fas fa-file-excel ml-2"></i>
+                                    تصدير إلى Excel
+                                </button>
+
+                                <div class="relative">
+                                    <input type="file" id="importCarsFile" accept=".xlsx,.xls" class="hidden" onchange="importCars(event)">
+                                    <button onclick="document.getElementById('importCarsFile').click()" class="btn-primary w-full">
+                                        <i class="fas fa-file-import ml-2"></i>
+                                        استيراد من Excel
+                                    </button>
+                                </div>
+
+                                <button onclick="checkExpiryDates()" class="btn-secondary w-full">
+                                    <i class="fas fa-calendar-check ml-2"></i>
+                                    فحص تواريخ الانتهاء
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- تنبيهات -->
+                        <div class="bg-white rounded-lg card-shadow p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">
+                                <i class="fas fa-bell ml-2 text-red-500"></i>
+                                التنبيهات
+                            </h3>
+
+                            <div id="carAlerts" class="space-y-2">
+                                <!-- سيتم ملء هذا القسم بالتنبيهات -->
+                            </div>
+
+                            <div id="noCarAlerts" class="text-center py-4 text-gray-500 hidden">
+                                <i class="fas fa-check-circle text-green-500 text-2xl mb-2"></i>
+                                <p class="text-sm">لا توجد تنبيهات</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- جدول السيارات -->
+                <div class="bg-white rounded-lg card-shadow p-6 mt-6">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4 md:mb-0">
+                            <i class="fas fa-table ml-2 text-blue-500"></i>
+                            قائمة السيارات
+                        </h3>
+
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <input type="text" id="carSearch" class="form-input" placeholder="البحث في السيارات..." onkeyup="filterCars()">
+                            <select id="carFilterBrand" class="form-input" onchange="filterCars()">
+                                <option value="">جميع العلامات</option>
+                                <option value="تويوتا">تويوتا</option>
+                                <option value="هوندا">هوندا</option>
+                                <option value="نيسان">نيسان</option>
+                                <option value="هيونداي">هيونداي</option>
+                                <option value="كيا">كيا</option>
+                                <option value="أخرى">أخرى</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>لوحة الأرقام</th>
+                                    <th>اسم السيارة</th>
+                                    <th>العلامة التجارية</th>
+                                    <th>السنة</th>
+                                    <th>المالك</th>
+                                    <th>السائق</th>
+                                    <th>انتهاء التأمين</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="carsTableBody">
+                                <!-- سيتم ملء هذا القسم بالبيانات -->
+                            </tbody>
+                        </table>
+
+                        <div id="noCarsData" class="text-center py-8 text-gray-500 hidden">
+                            <i class="fas fa-car text-4xl mb-4"></i>
+                            <p>لا توجد سيارات مسجلة</p>
+                            <p class="text-sm">قم بإضافة أول سيارة</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="expensesPage" class="page-content hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- نموذج إدخال المصروف -->
+                    <div class="lg:col-span-2">
+                        <div class="bg-white rounded-lg card-shadow p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">
+                                <i class="fas fa-receipt ml-2 text-red-500"></i>
+                                إدخال مصروف جديد
+                            </h3>
+
+                            <form id="expenseForm" class="space-y-4">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">لوحة أرقام السيارة *</label>
+                                        <select id="expenseCarPlate" class="form-input" required onchange="fillCarDetails()">
+                                            <option value="">اختر السيارة...</option>
+                                            <!-- سيتم ملؤها من قائمة السيارات -->
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">اسم السيارة</label>
+                                        <input type="text" id="expenseCarName" class="form-input bg-gray-50" readonly>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">نوع المصروف *</label>
+                                        <select id="expenseType" class="form-input" required>
+                                            <option value="">اختر نوع المصروف...</option>
+                                            <option value="وقود">وقود</option>
+                                            <option value="صيانة">صيانة</option>
+                                            <option value="تأمين">تأمين</option>
+                                            <option value="رسوم حكومية">رسوم حكومية</option>
+                                            <option value="غسيل">غسيل</option>
+                                            <option value="إطارات">إطارات</option>
+                                            <option value="زيوت">زيوت</option>
+                                            <option value="قطع غيار">قطع غيار</option>
+                                            <option value="مخالفات">مخالفات</option>
+                                            <option value="أخرى">أخرى</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">المبلغ (ريال) *</label>
+                                        <input type="number" id="expenseAmount" class="form-input" placeholder="0.00" required min="0" step="0.01">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">وصف المصروف *</label>
+                                    <input type="text" id="expenseDescription" class="form-input" placeholder="مثال: تعبئة وقود، تغيير زيت، إلخ" required>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">التاريخ *</label>
+                                        <input type="date" id="expenseDate" class="form-input" required>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">الوقت</label>
+                                        <input type="time" id="expenseTime" class="form-input">
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">المورد/المحل</label>
+                                        <input type="text" id="expenseVendor" class="form-input" placeholder="اسم المحل أو المورد">
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">طريقة الدفع</label>
+                                        <select id="expensePaymentMethod" class="form-input">
+                                            <option value="">اختر طريقة الدفع...</option>
+                                            <option value="نقدي">نقدي</option>
+                                            <option value="بطاقة ائتمان">بطاقة ائتمان</option>
+                                            <option value="بطاقة مدى">بطاقة مدى</option>
+                                            <option value="تحويل بنكي">تحويل بنكي</option>
+                                            <option value="شيك">شيك</option>
+                                            <option value="أخرى">أخرى</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">عداد الكيلومترات (عند المصروف)</label>
+                                    <input type="number" id="expenseMileage" class="form-input" placeholder="0" min="0">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">ملاحظات إضافية</label>
+                                    <textarea id="expenseNotes" class="form-input" rows="3" placeholder="أي ملاحظات إضافية (اختياري)"></textarea>
+                                </div>
+
+                                <!-- إرفاق ملف -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">إرفاق مستند أو صورة</label>
+                                    <div class="file-upload" id="fileUploadArea">
+                                        <input type="file" id="expenseAttachment" class="hidden" accept="image/*,.pdf,.doc,.docx" onchange="handleFileUpload(event)">
+                                        <div class="text-center">
+                                            <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                                            <p class="text-gray-600">اسحب الملف هنا أو انقر للاختيار</p>
+                                            <p class="text-sm text-gray-500 mt-1">الصور، PDF، Word (حد أقصى 5 ميجا)</p>
+                                        </div>
+                                        <div id="uploadedFile" class="hidden mt-3 p-3 bg-green-50 rounded-lg">
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center">
+                                                    <i class="fas fa-file text-green-500 ml-2"></i>
+                                                    <span id="fileName" class="text-sm text-green-700"></span>
+                                                </div>
+                                                <button type="button" onclick="removeFile()" class="text-red-500 hover:text-red-700">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex space-x-2">
+                                    <button type="submit" class="btn-primary flex-1">
+                                        <i class="fas fa-save ml-2"></i>
+                                        حفظ المصروف
+                                    </button>
+                                    <button type="button" onclick="resetExpenseForm()" class="btn-secondary">
+                                        <i class="fas fa-undo ml-2"></i>
+                                        إعادة تعيين
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- معلومات جانبية -->
+                    <div class="space-y-6">
+                        <!-- رصيد الخزينة -->
+                        <div class="bg-white rounded-lg card-shadow p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">
+                                <i class="fas fa-wallet ml-2 text-blue-500"></i>
+                                رصيد الخزينة
+                            </h3>
+
+                            <div class="text-center">
+                                <p class="text-3xl font-bold text-blue-600" id="treasuryBalanceDisplay">0 ريال</p>
+                                <p class="text-sm text-gray-500 mt-1">الرصيد المتاح</p>
+                            </div>
+
+                            <div class="mt-4 p-3 bg-yellow-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <i class="fas fa-info-circle text-yellow-500 ml-2"></i>
+                                    <p class="text-sm text-yellow-700">سيتم خصم المبلغ تلقائياً من الخزينة</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- إحصائيات سريعة -->
+                        <div class="bg-white rounded-lg card-shadow p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">
+                                <i class="fas fa-chart-line ml-2 text-green-500"></i>
+                                إحصائيات اليوم
+                            </h3>
+
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-600">مصروفات اليوم</span>
+                                    <span class="font-semibold text-gray-800" id="todayExpenses">0 ريال</span>
+                                </div>
+
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-600">عدد المصروفات</span>
+                                    <span class="font-semibold text-gray-800" id="todayExpenseCount">0</span>
+                                </div>
+
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-600">متوسط المصروف</span>
+                                    <span class="font-semibold text-gray-800" id="avgExpenseToday">0 ريال</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- آخر المصروفات -->
+                        <div class="bg-white rounded-lg card-shadow p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">
+                                <i class="fas fa-history ml-2 text-purple-500"></i>
+                                آخر المصروفات
+                            </h3>
+
+                            <div id="recentExpenses" class="space-y-3">
+                                <!-- سيتم ملء هذا القسم بالبيانات -->
+                            </div>
+
+                            <div id="noRecentExpenses" class="text-center py-4 text-gray-500 hidden">
+                                <i class="fas fa-receipt text-2xl mb-2"></i>
+                                <p class="text-sm">لا توجد مصروفات حديثة</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="expenseListPage" class="page-content hidden">
+                <!-- إحصائيات سريعة -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div class="stats-card expense">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600">إجمالي المصروفات</p>
+                                <p class="text-2xl font-bold text-red-600" id="totalExpensesDisplay">0 ريال</p>
+                            </div>
+                            <i class="fas fa-money-bill-wave text-2xl text-red-500"></i>
+                        </div>
+                    </div>
+
+                    <div class="stats-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600">عدد المصروفات</p>
+                                <p class="text-2xl font-bold text-gray-800" id="totalExpenseCountDisplay">0</p>
+                            </div>
+                            <i class="fas fa-receipt text-2xl text-blue-500"></i>
+                        </div>
+                    </div>
+
+                    <div class="stats-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600">متوسط المصروف</p>
+                                <p class="text-2xl font-bold text-gray-800" id="avgExpenseDisplay">0 ريال</p>
+                            </div>
+                            <i class="fas fa-calculator text-2xl text-green-500"></i>
+                        </div>
+                    </div>
+
+                    <div class="stats-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600">أكبر مصروف</p>
+                                <p class="text-2xl font-bold text-gray-800" id="maxExpenseDisplay">0 ريال</p>
+                            </div>
+                            <i class="fas fa-arrow-up text-2xl text-purple-500"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- جدول المصروفات -->
+                <div class="bg-white rounded-lg card-shadow p-6">
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4 lg:mb-0">
+                            <i class="fas fa-list ml-2 text-red-500"></i>
+                            قائمة المصروفات
+                        </h2>
+
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <button onclick="exportExpenses()" class="btn-success">
+                                <i class="fas fa-file-excel ml-2"></i>
+                                تصدير Excel
+                            </button>
+                            <button onclick="printExpenses()" class="btn-primary">
+                                <i class="fas fa-print ml-2"></i>
+                                طباعة
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- فلاتر البحث -->
+                    <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-3">
+                            <i class="fas fa-filter ml-2"></i>
+                            تصفية المصروفات
+                        </h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">البحث</label>
+                                <input type="text" id="expenseSearchText" class="form-input" placeholder="البحث في الوصف..." onkeyup="filterExpenses()">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">السيارة</label>
+                                <select id="expenseFilterCar" class="form-input" onchange="filterExpenses()">
+                                    <option value="">جميع السيارات</option>
+                                    <!-- سيتم ملؤها من قائمة السيارات -->
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">نوع المصروف</label>
+                                <select id="expenseFilterType" class="form-input" onchange="filterExpenses()">
+                                    <option value="">جميع الأنواع</option>
+                                    <option value="وقود">وقود</option>
+                                    <option value="صيانة">صيانة</option>
+                                    <option value="تأمين">تأمين</option>
+                                    <option value="رسوم حكومية">رسوم حكومية</option>
+                                    <option value="غسيل">غسيل</option>
+                                    <option value="إطارات">إطارات</option>
+                                    <option value="زيوت">زيوت</option>
+                                    <option value="قطع غيار">قطع غيار</option>
+                                    <option value="مخالفات">مخالفات</option>
+                                    <option value="أخرى">أخرى</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">الفترة الزمنية</label>
+                                <select id="expenseFilterPeriod" class="form-input" onchange="filterExpenses()">
+                                    <option value="">جميع الفترات</option>
+                                    <option value="today">اليوم</option>
+                                    <option value="week">هذا الأسبوع</option>
+                                    <option value="month">هذا الشهر</option>
+                                    <option value="quarter">هذا الربع</option>
+                                    <option value="year">هذا العام</option>
+                                    <option value="custom">فترة مخصصة</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- فترة مخصصة -->
+                        <div id="customDateRange" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 hidden">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">من تاريخ</label>
+                                <input type="date" id="expenseFilterDateFrom" class="form-input" onchange="filterExpenses()">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">إلى تاريخ</label>
+                                <input type="date" id="expenseFilterDateTo" class="form-input" onchange="filterExpenses()">
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center mt-4">
+                            <button onclick="clearFilters()" class="btn-secondary">
+                                <i class="fas fa-times ml-2"></i>
+                                مسح الفلاتر
+                            </button>
+
+                            <div class="text-sm text-gray-600">
+                                <span>عرض </span>
+                                <span id="filteredCount" class="font-semibold">0</span>
+                                <span> من </span>
+                                <span id="totalCount" class="font-semibold">0</span>
+                                <span> مصروف</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- الجدول -->
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>التاريخ</th>
+                                    <th>السيارة</th>
+                                    <th>النوع</th>
+                                    <th>الوصف</th>
+                                    <th>المبلغ</th>
+                                    <th>المورد</th>
+                                    <th>المرفق</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expenseListTableBody">
+                                <!-- سيتم ملء هذا القسم بالبيانات -->
+                            </tbody>
+                        </table>
+
+                        <div id="noExpenseListData" class="text-center py-8 text-gray-500 hidden">
+                            <i class="fas fa-receipt text-4xl mb-4"></i>
+                            <p>لا توجد مصروفات</p>
+                            <p class="text-sm">قم بإضافة أول مصروف</p>
+                        </div>
+                    </div>
+
+                    <!-- ملخص النتائج المصفاة -->
+                    <div id="filterSummary" class="mt-6 p-4 bg-blue-50 rounded-lg hidden">
+                        <h4 class="font-semibold text-blue-800 mb-2">ملخص النتائج المصفاة</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                            <div>
+                                <span class="text-blue-600">إجمالي المبلغ: </span>
+                                <span class="font-semibold" id="filteredTotal">0 ريال</span>
+                            </div>
+                            <div>
+                                <span class="text-blue-600">عدد المصروفات: </span>
+                                <span class="font-semibold" id="filteredCountSummary">0</span>
+                            </div>
+                            <div>
+                                <span class="text-blue-600">متوسط المصروف: </span>
+                                <span class="font-semibold" id="filteredAverage">0 ريال</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="reportsPage" class="page-content hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- قائمة التقارير -->
+                    <div class="bg-white rounded-lg card-shadow p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">
+                            <i class="fas fa-file-alt ml-2 text-blue-500"></i>
+                            أنواع التقارير
+                        </h3>
+
+                        <div class="space-y-3">
+                            <button onclick="generateReport('totalExpensesByCar')" class="w-full text-right p-3 rounded-lg border hover:bg-blue-50 transition-colors">
+                                <div class="flex items-center">
+                                    <i class="fas fa-car text-blue-500 ml-3"></i>
+                                    <div>
+                                        <div class="font-medium">إجمالي المصروفات لكل سيارة</div>
+                                        <div class="text-sm text-gray-500">تقرير تفصيلي</div>
+                                    </div>
+                                </div>
+                            </button>
+
+                            <button onclick="generateReport('summaryExpensesByCar')" class="w-full text-right p-3 rounded-lg border hover:bg-green-50 transition-colors">
+                                <div class="flex items-center">
+                                    <i class="fas fa-chart-bar text-green-500 ml-3"></i>
+                                    <div>
+                                        <div class="font-medium">إجمالي المصروفات لكل سيارة</div>
+                                        <div class="text-sm text-gray-500">تقرير مختصر</div>
+                                    </div>
+                                </div>
+                            </button>
+
+                            <button onclick="generateReport('expensesByPeriod')" class="w-full text-right p-3 rounded-lg border hover:bg-purple-50 transition-colors">
+                                <div class="flex items-center">
+                                    <i class="fas fa-calendar text-purple-500 ml-3"></i>
+                                    <div>
+                                        <div class="font-medium">تقرير حسب الفترة الزمنية</div>
+                                        <div class="text-sm text-gray-500">اختر فترة مخصصة</div>
+                                    </div>
+                                </div>
+                            </button>
+
+                            <button onclick="generateReport('specificCarReport')" class="w-full text-right p-3 rounded-lg border hover:bg-orange-50 transition-colors">
+                                <div class="flex items-center">
+                                    <i class="fas fa-search text-orange-500 ml-3"></i>
+                                    <div>
+                                        <div class="font-medium">تقرير سيارة محددة</div>
+                                        <div class="text-sm text-gray-500">خلال فترة معينة</div>
+                                    </div>
+                                </div>
+                            </button>
+
+                            <button onclick="generateReport('treasuryStatement')" class="w-full text-right p-3 rounded-lg border hover:bg-indigo-50 transition-colors">
+                                <div class="flex items-center">
+                                    <i class="fas fa-wallet text-indigo-500 ml-3"></i>
+                                    <div>
+                                        <div class="font-medium">كشف حساب الخزينة</div>
+                                        <div class="text-sm text-gray-500">جميع المعاملات</div>
+                                    </div>
+                                </div>
+                            </button>
+
+                            <button onclick="generateReport('treasuryAnalysis')" class="w-full text-right p-3 rounded-lg border hover:bg-pink-50 transition-colors">
+                                <div class="flex items-center">
+                                    <i class="fas fa-chart-pie text-pink-500 ml-3"></i>
+                                    <div>
+                                        <div class="font-medium">تحليل الخزينة</div>
+                                        <div class="text-sm text-gray-500">إحصائيات مفصلة</div>
+                                    </div>
+                                </div>
+                            </button>
+
+                            <button onclick="generateReport('carsData')" class="w-full text-right p-3 rounded-lg border hover:bg-teal-50 transition-colors">
+                                <div class="flex items-center">
+                                    <i class="fas fa-database text-teal-500 ml-3"></i>
+                                    <div>
+                                        <div class="font-medium">تقرير بيانات السيارات</div>
+                                        <div class="text-sm text-gray-500">معلومات شاملة</div>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- خيارات إضافية -->
+                        <div class="mt-6 pt-6 border-t">
+                            <h4 class="font-medium text-gray-800 mb-3">خيارات التقرير</h4>
+
+                            <div class="space-y-3">
+                                <div id="reportDateRange" class="hidden">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">من تاريخ</label>
+                                    <input type="date" id="reportDateFrom" class="form-input mb-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">إلى تاريخ</label>
+                                    <input type="date" id="reportDateTo" class="form-input">
+                                </div>
+
+                                <div id="reportCarSelection" class="hidden">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">اختر السيارة</label>
+                                    <select id="reportSelectedCar" class="form-input">
+                                        <option value="">اختر السيارة...</option>
+                                        <!-- سيتم ملؤها من قائمة السيارات -->
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- منطقة عرض التقرير -->
+                    <div class="lg:col-span-2">
+                        <div class="bg-white rounded-lg card-shadow p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-bold text-gray-800">
+                                    <i class="fas fa-file-alt ml-2 text-green-500"></i>
+                                    <span id="reportTitle">عرض التقرير</span>
+                                </h3>
+
+                                <div class="flex space-x-2">
+                                    <button onclick="printReport()" class="btn-primary" id="printReportBtn" disabled>
+                                        <i class="fas fa-print ml-2"></i>
+                                        طباعة
+                                    </button>
+                                    <button onclick="exportReportToExcel()" class="btn-success" id="exportReportBtn" disabled>
+                                        <i class="fas fa-file-excel ml-2"></i>
+                                        تصدير Excel
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="reportContent" class="min-h-96">
+                                <div class="text-center py-12 text-gray-500">
+                                    <i class="fas fa-file-alt text-4xl mb-4"></i>
+                                    <p>اختر نوع التقرير من القائمة الجانبية</p>
+                                    <p class="text-sm">سيتم عرض التقرير هنا</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="aiAnalysisPage" class="page-content hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- نموذج طلب التحليل -->
+                    <div class="bg-white rounded-lg card-shadow p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">
+                            <i class="fas fa-robot ml-2 text-purple-500"></i>
+                            طلب تحليل الصيانة
+                        </h3>
+
+                        <form id="aiAnalysisForm" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">اختر السيارة *</label>
+                                <select id="aiAnalysisCar" class="form-input" required onchange="loadCarAnalysisData()">
+                                    <option value="">اختر السيارة...</option>
+                                    <!-- سيتم ملؤها من قائمة السيارات -->
+                                </select>
+                            </div>
+
+                            <div id="carAnalysisInfo" class="hidden">
+                                <div class="bg-blue-50 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-blue-800 mb-2">معلومات السيارة</h4>
+                                    <div class="text-sm space-y-1">
+                                        <div><span class="font-medium">الاسم:</span> <span id="carAnalysisName">-</span></div>
+                                        <div><span class="font-medium">العلامة التجارية:</span> <span id="carAnalysisBrand">-</span></div>
+                                        <div><span class="font-medium">السنة:</span> <span id="carAnalysisYear">-</span></div>
+                                        <div><span class="font-medium">عداد الكيلومترات:</span> <span id="carAnalysisMileage">-</span></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">نوع التحليل *</label>
+                                <select id="analysisType" class="form-input" required>
+                                    <option value="">اختر نوع التحليل...</option>
+                                    <option value="general">تحليل عام للحالة</option>
+                                    <option value="maintenance">تحليل الصيانة الدورية</option>
+                                    <option value="cost">تحليل التكاليف</option>
+                                    <option value="prediction">توقع الأعطال</option>
+                                    <option value="efficiency">تحليل الكفاءة</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">الأعراض أو المشاكل الحالية</label>
+                                <textarea id="currentIssues" class="form-input" rows="3" placeholder="اذكر أي أعراض أو مشاكل تواجهها مع السيارة (اختياري)"></textarea>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">معلومات إضافية</label>
+                                <textarea id="additionalInfo" class="form-input" rows="3" placeholder="أي معلومات إضافية قد تساعد في التحليل (اختياري)"></textarea>
+                            </div>
+
+                            <div class="bg-yellow-50 p-4 rounded-lg">
+                                <div class="flex items-start">
+                                    <i class="fas fa-info-circle text-yellow-500 ml-2 mt-1"></i>
+                                    <div class="text-sm text-yellow-700">
+                                        <p class="font-medium mb-1">ملاحظة:</p>
+                                        <p>سيتم تحليل بيانات السيارة والمصروفات السابقة لتقديم توصيات مخصصة. التحليل قد يستغرق بضع ثوان.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn-primary w-full">
+                                <i class="fas fa-brain ml-2"></i>
+                                بدء التحليل
+                            </button>
+                        </form>
+
+                        <!-- إعدادات API -->
+                        <div class="mt-6 pt-6 border-t">
+                            <h4 class="font-medium text-gray-800 mb-3">إعدادات API</h4>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">مفتاح Gemini API</label>
+                                <input type="password" id="geminiApiKey" class="form-input" placeholder="أدخل مفتاح API">
+                                <p class="text-xs text-gray-500 mt-1">يمكنك الحصول على مفتاح مجاني من Google AI Studio</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- منطقة عرض التحليل -->
+                    <div class="lg:col-span-2">
+                        <div class="bg-white rounded-lg card-shadow p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-bold text-gray-800">
+                                    <i class="fas fa-chart-line ml-2 text-green-500"></i>
+                                    نتائج التحليل
+                                </h3>
+
+                                <div class="flex space-x-2">
+                                    <button onclick="saveAnalysisReport()" class="btn-success" id="saveAnalysisBtn" disabled>
+                                        <i class="fas fa-save ml-2"></i>
+                                        حفظ التقرير
+                                    </button>
+                                    <button onclick="printAnalysisReport()" class="btn-primary" id="printAnalysisBtn" disabled>
+                                        <i class="fas fa-print ml-2"></i>
+                                        طباعة
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="analysisResults" class="min-h-96">
+                                <div class="text-center py-12 text-gray-500">
+                                    <i class="fas fa-robot text-6xl mb-4 text-gray-300"></i>
+                                    <p class="text-lg mb-2">مرحباً بك في نظام التحليل الذكي</p>
+                                    <p>اختر سيارة ونوع التحليل لبدء التحليل الذكي</p>
+                                    <div class="mt-6 text-sm text-gray-400">
+                                        <p>✓ تحليل شامل لحالة السيارة</p>
+                                        <p>✓ توصيات الصيانة الذكية</p>
+                                        <p>✓ توقع الأعطال المحتملة</p>
+                                        <p>✓ تحليل التكاليف والكفاءة</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- حالة التحليل -->
+                            <div id="analysisLoading" class="hidden text-center py-8">
+                                <div class="inline-flex items-center">
+                                    <i class="fas fa-spinner fa-spin text-2xl text-purple-500 ml-3"></i>
+                                    <span class="text-lg">جاري التحليل...</span>
+                                </div>
+                                <p class="text-sm text-gray-500 mt-2">يرجى الانتظار بينما نحلل بيانات السيارة</p>
+                            </div>
+                        </div>
+
+                        <!-- سجل التحليلات السابقة -->
+                        <div class="bg-white rounded-lg card-shadow p-6 mt-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">
+                                <i class="fas fa-history ml-2 text-blue-500"></i>
+                                التحليلات السابقة
+                            </h3>
+
+                            <div id="previousAnalyses" class="space-y-3">
+                                <!-- سيتم ملء هذا القسم بالتحليلات السابقة -->
+                            </div>
+
+                            <div id="noPreviousAnalyses" class="text-center py-6 text-gray-500">
+                                <i class="fas fa-clipboard-list text-3xl mb-2"></i>
+                                <p class="text-sm">لا توجد تحليلات سابقة</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+
+    <!-- تسجيل Service Worker للعمل بدون إنترنت -->
+    <script>
+        // تسجيل Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                        console.log('Service Worker: تم التسجيل بنجاح', registration.scope);
+
+                        // فحص التحديثات
+                        registration.addEventListener('updatefound', function() {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', function() {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // إشعار بوجود تحديث
+                                    if (confirm('يتوفر تحديث جديد للتطبيق. هل تريد إعادة التحميل؟')) {
+                                        window.location.reload();
+                                    }
+                                }
+                            });
+                        });
+                    })
+                    .catch(function(error) {
+                        console.log('Service Worker: فشل في التسجيل', error);
+                    });
+
+                // استقبال رسائل من Service Worker
+                navigator.serviceWorker.addEventListener('message', function(event) {
+                    if (event.data && event.data.type === 'UPDATE_AVAILABLE') {
+                        showInfoMessage(event.data.message);
+                    }
+                });
+            });
+        }
+
+        // إضافة إشعار التثبيت
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', function(e) {
+            console.log('PWA: يمكن تثبيت التطبيق');
+            e.preventDefault();
+            deferredPrompt = e;
+
+            // إظهار زر التثبيت (يمكن إضافته لاحقاً)
+            showInstallButton();
+        });
+
+        // معالجة تثبيت التطبيق
+        window.addEventListener('appinstalled', function(e) {
+            console.log('PWA: تم تثبيت التطبيق');
+            showSuccessMessage('تم تثبيت التطبيق بنجاح!');
+            deferredPrompt = null;
+        });
+
+        // وظيفة إظهار زر التثبيت
+        function showInstallButton() {
+            // يمكن إضافة زر تثبيت في الواجهة
+            console.log('PWA: يمكن إضافة زر التثبيت');
+        }
+
+        // وظيفة تثبيت التطبيق
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(function(choiceResult) {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('PWA: المستخدم وافق على التثبيت');
+                    } else {
+                        console.log('PWA: المستخدم رفض التثبيت');
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
+
+        // فحص حالة الاتصال
+        function updateOnlineStatus() {
+            const status = navigator.onLine ? 'متصل' : 'غير متصل';
+            console.log('حالة الاتصال:', status);
+
+            if (!navigator.onLine) {
+                showInfoMessage('أنت تعمل في وضع عدم الاتصال. بعض الميزات قد لا تعمل.');
+            }
+        }
+
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+
+        // تحديث حالة الاتصال عند التحميل
+        document.addEventListener('DOMContentLoaded', updateOnlineStatus);
+    </script>
+</body>
+</html>

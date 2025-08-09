@@ -1,12 +1,11 @@
 // إعداد Supabase
-import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js@2';
-
 // بيانات مشروعك من Supabase Dashboard
-const SUPABASE_URL = 'https://uvrtpwkcdmujrbugpzbz.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV2cnRwd2tjZG11anJidWdwemJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM3NjE5NzQsImV4cCI6MjA0OTMzNzk3NH0.YhCJqJhKJhKJhKJhKJhKJhKJhKJhKJhKJhKJhKJhKJhK';
+// يجب استبدال هذه القيم بالقيم الحقيقية من مشروعك
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
 
-// إنشاء عميل Supabase
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// إنشاء عميل Supabase (سيتم تهيئته في supabase-integration.js)
+let supabase = null;
 
 // إعدادات التخزين
 export const STORAGE_BUCKET = 'car-expenses-attachments';

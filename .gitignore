@@ -1,22 +1,73 @@
-### AL ###
-#Template for AL projects for Dynamics 365 Business Central
-#launch.json folder
+# نظام إدارة مصروفات السيارات - ملفات مستبعدة من Git
+
+# ملفات النظام
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ملفات المحررات
 .vscode/
-#Cache folder
-.alcache/
-#Symbols folder
-.alpackages/
-#Snapshots folder
-.snapshots/
-#Testing Output folder
-.output/
-#Extension App-file
-*.app
-#Rapid Application Development File
-rad.json
-#Translation Base-file
-*.g.xlf
-#License-file
-*.flf
-#Test results file
-TestResults.xml
+.idea/
+*.swp
+*.swo
+*~
+
+# ملفات Node.js (إذا تم استخدامها لاحقاً)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ملفات البيئة والتكوين الحساسة
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+config.local.js
+secrets.js
+
+# ملفات مؤقتة
+*.tmp
+*.temp
+*.log
+*.cache
+
+# ملفات النسخ الاحتياطية
+*.bak
+*.backup
+*.old
+
+# مجلدات التوزيع
+dist/
+build/
+out/
+
+# ملفات الاختبار
+coverage/
+.nyc_output/
+
+# ملفات قواعد البيانات المحلية
+*.db
+*.sqlite
+*.sqlite3
+
+# ملفات الصور المؤقتة
+uploads/temp/
+temp-images/
+
+# ملفات التوثيق المؤقتة
+docs/temp/
+
+# ملفات خاصة بالمطور
+notes.txt
+todo.txt
+private/
+
+# ملفات النشر
+deploy.sh
+publish.sh

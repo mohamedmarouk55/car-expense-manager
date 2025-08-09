@@ -309,28 +309,89 @@
                 <div class="w-16 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto rounded-full"></div>
             </div>
 
-            <form id="loginForm" class="space-y-6">
-                <div class="relative">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
+            <!-- تبويبات تسجيل الدخول -->
+            <div class="flex mb-6 bg-gray-100 rounded-lg p-1">
+                <button id="loginTab" class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors bg-white text-blue-600 shadow-sm">
+                    تسجيل الدخول
+                </button>
+                <button id="signupTab" class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors text-gray-600 hover:text-gray-900">
+                    إنشاء حساب
+                </button>
+            </div>
+
+            <!-- نموذج تسجيل الدخول -->
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <i class="fas fa-envelope ml-2"></i>
+                        البريد الإلكتروني
+                    </label>
+                    <input type="email" id="loginEmail" class="form-input w-full" placeholder="أدخل بريدك الإلكتروني" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
                         <i class="fas fa-lock ml-2"></i>
                         كلمة المرور
                     </label>
-                    <input type="password" id="passwordInput" class="form-input pl-10" placeholder="أدخل كلمة المرور" required>
-                    <i class="fas fa-key absolute left-3 top-10 text-gray-400"></i>
+                    <input type="password" id="loginPassword" class="form-input w-full" placeholder="أدخل كلمة المرور" required>
                 </div>
-
                 <button type="submit" class="btn-primary w-full py-3 text-lg font-semibold">
                     <i class="fas fa-sign-in-alt ml-2"></i>
-                    دخول
+                    تسجيل الدخول
                 </button>
-
-                <div class="text-center">
-                    <button type="button" class="text-blue-600 hover:text-blue-800 text-sm font-medium" onclick="showForgotPassword()">
-                        <i class="fas fa-question-circle ml-1"></i>
-                        نسيت كلمة المرور؟
-                    </button>
-                </div>
             </form>
+
+            <!-- نموذج إنشاء حساب -->
+            <form id="signupForm" class="space-y-4" style="display: none;">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <i class="fas fa-user ml-2"></i>
+                        الاسم الكامل
+                    </label>
+                    <input type="text" id="signupName" class="form-input w-full" placeholder="أدخل اسمك الكامل" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <i class="fas fa-envelope ml-2"></i>
+                        البريد الإلكتروني
+                    </label>
+                    <input type="email" id="signupEmail" class="form-input w-full" placeholder="أدخل بريدك الإلكتروني" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <i class="fas fa-lock ml-2"></i>
+                        كلمة المرور
+                    </label>
+                    <input type="password" id="signupPassword" class="form-input w-full" placeholder="أدخل كلمة المرور (6 أحرف على الأقل)" required minlength="6">
+                </div>
+                <button type="submit" class="btn-success w-full py-3 text-lg font-semibold">
+                    <i class="fas fa-user-plus ml-2"></i>
+                    إنشاء حساب
+                </button>
+            </form>
+
+            <!-- تسجيل الدخول بـ Google -->
+            <div class="mt-6">
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-300"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-2 bg-white text-gray-500">أو</span>
+                    </div>
+                </div>
+                <button id="googleSignIn" class="mt-4 w-full flex justify-center items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                    <i class="fab fa-google text-red-500 ml-2"></i>
+                    تسجيل الدخول بـ Google
+                </button>
+            </div>
+
+            <!-- رابط العمل بدون حساب -->
+            <div class="mt-4 text-center">
+                <button id="workOffline" class="text-sm text-blue-600 hover:text-blue-800">
+                    العمل بدون حساب (محلياً فقط)
+                </button>
+            </div>
 
             <div class="mt-6 pt-6 border-t border-gray-200 text-center">
                 <p class="text-xs text-gray-500">
@@ -380,6 +441,11 @@
                         <!-- زر الإعدادات المتقدمة -->
                         <button onclick="showAdvancedSettings()" class="btn-secondary p-2" title="الإعدادات المتقدمة">
                             <i class="fas fa-cogs"></i>
+                        </button>
+
+                        <!-- زر تسجيل الخروج (يظهر فقط عند استخدام Supabase) -->
+                        <button id="signOutBtn" onclick="signOut()" class="btn-danger p-2" title="تسجيل الخروج" style="display: none;">
+                            <i class="fas fa-sign-out-alt"></i>
                         </button>
 
                         <!-- زر الخروج -->
@@ -2028,14 +2094,9 @@
     </div>
 
     <!-- Supabase JavaScript Files -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
-    <script src="auth.js"></script>
-    <script src="database-api.js"></script>
-    <script src="file-manager.js"></script>
-    <script src="realtime-sync.js"></script>
-    <script src="data-migration.js"></script>
-    <script src="user-profile.js"></script>
-    <script src="system-test.js"></script>
+    <script src="supabase-integration.js"></script>
 
     <!-- Main JavaScript Files -->
     <script src="app.js"></script>

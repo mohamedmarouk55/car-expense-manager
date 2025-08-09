@@ -434,6 +434,11 @@
                         <span class="hidden sm:inline">تحليل الصيانة</span>
                         <span class="sm:hidden">التحليل</span>
                     </button>
+                    <button onclick="showPage('userProfile')" class="nav-button btn-secondary" id="nav-userProfile">
+                        <i class="fas fa-user-cog ml-2"></i>
+                        <span class="hidden sm:inline">الملف الشخصي</span>
+                        <span class="sm:hidden">الملف</span>
+                    </button>
                 </div>
             </div>
         </nav>
@@ -1862,9 +1867,177 @@
                     </div>
                 </div>
             </div>
+
+            <div id="userProfilePage" class="page-content hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- معلومات المستخدم -->
+                    <div class="bg-white rounded-lg card-shadow p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">
+                            <i class="fas fa-user ml-2 text-blue-500"></i>
+                            معلومات المستخدم
+                        </h3>
+
+                        <div class="text-center mb-6">
+                            <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-user text-2xl text-blue-500"></i>
+                            </div>
+                            <h4 id="userDisplayName" class="font-semibold text-gray-800">المستخدم</h4>
+                            <p id="userEmail" class="text-sm text-gray-500">user@example.com</p>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+                                <span class="text-sm text-gray-600">تاريخ التسجيل:</span>
+                                <span id="userJoinDate" class="text-sm font-medium">-</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+                                <span class="text-sm text-gray-600">آخر تسجيل دخول:</span>
+                                <span id="userLastLogin" class="text-sm font-medium">-</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+                                <span class="text-sm text-gray-600">حالة المزامنة:</span>
+                                <span id="syncStatus" class="text-sm font-medium text-green-600">متصل</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 space-y-2">
+                            <button onclick="dataMigration.startMigration()" class="w-full btn-primary">
+                                <i class="fas fa-cloud-upload-alt ml-2"></i>
+                                ترحيل البيانات المحلية
+                            </button>
+                            <button onclick="runSystemTest()" class="w-full btn-secondary">
+                                <i class="fas fa-vial ml-2"></i>
+                                اختبار النظام
+                            </button>
+                            <button onclick="authManager.signOut()" class="w-full btn-danger">
+                                <i class="fas fa-sign-out-alt ml-2"></i>
+                                تسجيل الخروج
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- إحصائيات الاستخدام -->
+                    <div class="bg-white rounded-lg card-shadow p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">
+                            <i class="fas fa-chart-bar ml-2 text-green-500"></i>
+                            إحصائيات الاستخدام
+                        </h3>
+
+                        <div class="space-y-4">
+                            <div class="text-center p-4 bg-blue-50 rounded-lg">
+                                <i class="fas fa-car text-2xl text-blue-500 mb-2"></i>
+                                <p class="text-2xl font-bold text-blue-600" id="userCarsCount">0</p>
+                                <p class="text-sm text-gray-600">السيارات المسجلة</p>
+                            </div>
+
+                            <div class="text-center p-4 bg-green-50 rounded-lg">
+                                <i class="fas fa-users text-2xl text-green-500 mb-2"></i>
+                                <p class="text-2xl font-bold text-green-600" id="userEmployeesCount">0</p>
+                                <p class="text-sm text-gray-600">الموظفين</p>
+                            </div>
+
+                            <div class="text-center p-4 bg-red-50 rounded-lg">
+                                <i class="fas fa-receipt text-2xl text-red-500 mb-2"></i>
+                                <p class="text-2xl font-bold text-red-600" id="userExpensesCount">0</p>
+                                <p class="text-sm text-gray-600">المصروفات</p>
+                            </div>
+
+                            <div class="text-center p-4 bg-purple-50 rounded-lg">
+                                <i class="fas fa-money-bill-wave text-2xl text-purple-500 mb-2"></i>
+                                <p class="text-2xl font-bold text-purple-600" id="userTotalExpenses">0 ريال</p>
+                                <p class="text-sm text-gray-600">إجمالي المصروفات</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- الإعدادات والتفضيلات -->
+                    <div class="bg-white rounded-lg card-shadow p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">
+                            <i class="fas fa-cog ml-2 text-gray-500"></i>
+                            الإعدادات والتفضيلات
+                        </h3>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">اللغة</label>
+                                <select class="form-input">
+                                    <option value="ar">العربية</option>
+                                    <option value="en">English</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">العملة</label>
+                                <select class="form-input">
+                                    <option value="SAR">ريال سعودي (SAR)</option>
+                                    <option value="USD">دولار أمريكي (USD)</option>
+                                    <option value="EUR">يورو (EUR)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="form-checkbox" checked>
+                                    <span class="mr-2 text-sm">تفعيل الإشعارات</span>
+                                </label>
+                            </div>
+
+                            <div>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="form-checkbox" checked>
+                                    <span class="mr-2 text-sm">المزامنة التلقائية</span>
+                                </label>
+                            </div>
+
+                            <div>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="form-checkbox">
+                                    <span class="mr-2 text-sm">الوضع المظلم</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 pt-6 border-t">
+                            <h4 class="font-medium text-gray-800 mb-3">النسخ الاحتياطي</h4>
+
+                            <div class="space-y-2">
+                                <button onclick="exportAllData()" class="w-full btn-secondary">
+                                    <i class="fas fa-download ml-2"></i>
+                                    تصدير جميع البيانات
+                                </button>
+                                <button onclick="showImportDialog()" class="w-full btn-secondary">
+                                    <i class="fas fa-upload ml-2"></i>
+                                    استيراد البيانات
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 pt-6 border-t">
+                            <h4 class="font-medium text-gray-800 mb-3">معلومات التطبيق</h4>
+
+                            <div class="text-sm text-gray-600 space-y-1">
+                                <p>الإصدار: 2.0.0</p>
+                                <p>آخر تحديث: ديسمبر 2024</p>
+                                <p>المطور: محمد مبروك عطية</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
+    <!-- Supabase JavaScript Files -->
+    <script src="supabase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="database-api.js"></script>
+    <script src="file-manager.js"></script>
+    <script src="realtime-sync.js"></script>
+    <script src="data-migration.js"></script>
+    <script src="user-profile.js"></script>
+    <script src="system-test.js"></script>
+
+    <!-- Main JavaScript Files -->
     <script src="app.js"></script>
 
     <!-- تسجيل Service Worker للعمل بدون إنترنت -->

@@ -61,25 +61,25 @@ function handleAuthStateChange(event, session) {
 
 // إظهار/إخفاء نماذج المصادقة
 function showLoginForm() {
-    const loginSection = document.getElementById('loginSection');
+    const loginScreen = document.getElementById('loginScreen');
     const mainApp = document.getElementById('mainApp');
-    if (loginSection) loginSection.style.display = 'block';
-    if (mainApp) mainApp.style.display = 'none';
+    if (loginScreen) loginScreen.style.display = 'flex';
+    if (mainApp) mainApp.classList.add('hidden');
 }
 
 function hideLoginForm() {
-    const loginSection = document.getElementById('loginSection');
-    if (loginSection) loginSection.style.display = 'none';
+    const loginScreen = document.getElementById('loginScreen');
+    if (loginScreen) loginScreen.style.display = 'none';
 }
 
 function showMainApp() {
     const mainApp = document.getElementById('mainApp');
-    if (mainApp) mainApp.style.display = 'block';
+    if (mainApp) mainApp.classList.remove('hidden');
 }
 
 function hideMainApp() {
     const mainApp = document.getElementById('mainApp');
-    if (mainApp) mainApp.style.display = 'none';
+    if (mainApp) mainApp.classList.add('hidden');
 }
 
 // وظائف المصادقة
@@ -454,28 +454,7 @@ function setupAuthForms() {
     }
 }
 
-// إظهار/إخفاء نماذج المصادقة
-function showLoginForm() {
-    const loginScreen = document.getElementById('loginScreen');
-    const mainApp = document.getElementById('mainApp');
-    if (loginScreen) loginScreen.style.display = 'flex';
-    if (mainApp) mainApp.classList.add('hidden');
-}
 
-function hideLoginForm() {
-    const loginScreen = document.getElementById('loginScreen');
-    if (loginScreen) loginScreen.style.display = 'none';
-}
-
-function showMainApp() {
-    const mainApp = document.getElementById('mainApp');
-    if (mainApp) mainApp.classList.remove('hidden');
-}
-
-function hideMainApp() {
-    const mainApp = document.getElementById('mainApp');
-    if (mainApp) mainApp.classList.add('hidden');
-}
 
 // إظهار/إخفاء زر تسجيل الخروج
 function showSignOutButton() {

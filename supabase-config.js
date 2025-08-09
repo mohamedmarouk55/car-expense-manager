@@ -8,10 +8,10 @@ const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
 let supabase = null;
 
 // إعدادات التخزين
-export const STORAGE_BUCKET = 'car-expenses-attachments';
+const STORAGE_BUCKET = 'car-expenses-attachments';
 
 // وظائف المصادقة
-export class AuthService {
+class AuthService {
   // تسجيل دخول بـ Google
   static async signInWithGoogle() {
     const { data, error } = await supabase.auth.signInWithOAuth({
@@ -65,7 +65,7 @@ export class AuthService {
 }
 
 // وظائف قاعدة البيانات
-export class DatabaseService {
+class DatabaseService {
   // السيارات
   static async getCars(userId) {
     const { data, error } = await supabase
@@ -171,7 +171,7 @@ export class DatabaseService {
 }
 
 // وظائف التخزين
-export class StorageService {
+class StorageService {
   // رفع ملف
   static async uploadFile(file, path) {
     const { data, error } = await supabase.storage
@@ -223,7 +223,7 @@ export class StorageService {
 }
 
 // وظائف المزامنة الفورية
-export class RealtimeService {
+class RealtimeService {
   // مراقبة تغييرات المصروفات
   static subscribeToExpenses(userId, callback) {
     return supabase
@@ -257,7 +257,7 @@ export class RealtimeService {
 }
 
 // وظائف مساعدة
-export class UtilsService {
+class UtilsService {
   // تحويل البيانات من Local Storage
   static async migrateFromLocalStorage() {
     const user = await AuthService.getCurrentUser();

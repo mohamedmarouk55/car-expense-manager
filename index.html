@@ -2190,6 +2190,43 @@
 
         // تحديث حالة الاتصال عند التحميل
         document.addEventListener('DOMContentLoaded', updateOnlineStatus);
+
+        // تهيئة النظام عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 بدء تهيئة النظام...');
+
+            // تهيئة Supabase
+            const supabaseReady = await initSupabase();
+
+            if (supabaseReady && currentUser) {
+                // المستخدم مسجل دخول مسبقاً
+                console.log('✅ المستخدم مسجل دخول:', currentUser.email);
+                hideLoginForm();
+                showMainApp();
+                showSignOutButton();
+                await syncDataToSupabase();
+            } else if (supabaseReady) {
+                // Supabase جاهز لكن المستخدم غير مسجل دخول
+                console.log('🔐 عرض نماذج تسجيل الدخول');
+                showLoginForm();
+                hideMainApp();
+                hideSignOutButton();
+            } else {
+                // Supabase غير مُعد - العمل محلياً
+                console.log('💻 العمل في الوضع المحلي');
+                hideLoginForm();
+                showMainApp();
+                hideSignOutButton();
+
+                // تحميل البيانات المحلية
+                loadLocalData();
+            }
+
+            // تهيئة باقي النظام
+            initializeApp();
+
+            console.log('✅ تم تهيئة النظام بنجاح');
+        });
     </script>
 </body>
 </html>

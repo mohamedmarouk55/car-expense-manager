@@ -46,6 +46,31 @@ function loadData() {
     }
 }
 
+// تحميل البيانات المحلية (للاستخدام مع Supabase)
+function loadLocalData() {
+    loadData();
+    updateDashboardStats();
+    updateCarStats();
+    updateEmployeeStats();
+    updateExpenseListStats();
+    updateTreasuryStats();
+    updateTodayStats();
+}
+
+// تهيئة التطبيق
+function initializeApp() {
+    // تحديث العرض
+    updateDashboardStats();
+    updateCarStats();
+    updateEmployeeStats();
+    updateExpenseListStats();
+    updateTreasuryStats();
+    updateTodayStats();
+
+    // إعداد event listeners إضافية إذا لزم الأمر
+    console.log('✅ تم تهيئة التطبيق');
+}
+
 // حفظ البيانات في localStorage
 function saveData() {
     try {

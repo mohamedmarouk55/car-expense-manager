@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار النظام</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-center mb-8">🧪 اختبار النظام</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- اختبار تحميل الملفات -->
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-xl font-bold mb-4">📁 تحميل الملفات</h2>
+                <div id="fileTests" class="space-y-2">
+                    <div class="flex items-center">
+                        <span class="w-4 h-4 rounded-full bg-gray-300 mr-2" id="supabaseLib"></span>
+                        <span>مكتبة Supabase</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="w-4 h-4 rounded-full bg-gray-300 mr-2" id="supabaseConfig"></span>
+                        <span>ملف supabase-config.js</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="w-4 h-4 rounded-full bg-gray-300 mr-2" id="supabaseIntegration"></span>
+                        <span>ملف supabase-integration.js</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="w-4 h-4 rounded-full bg-gray-300 mr-2" id="appJs"></span>
+                        <span>ملف app.js</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- اختبار الوظائف -->
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-xl font-bold mb-4">⚙️ اختبار الوظائف</h2>
+                <div id="functionTests" class="space-y-2">
+                    <div class="flex items-center">
+                        <span class="w-4 h-4 rounded-full bg-gray-300 mr-2" id="initSupabase"></span>
+                        <span>تهيئة Supabase</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="w-4 h-4 rounded-full bg-gray-300 mr-2" id="loadLocalData"></span>
+                        <span>تحميل البيانات المحلية</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="w-4 h-4 rounded-full bg-gray-300 mr-2" id="initializeApp"></span>
+                        <span>تهيئة التطبيق</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- نتائج الاختبار -->
+            <div class="bg-white p-6 rounded-lg shadow md:col-span-2">
+                <h2 class="text-xl font-bold mb-4">📊 نتائج الاختبار</h2>
+                <div id="testResults" class="bg-gray-50 p-4 rounded text-sm font-mono">
+                    جاري تشغيل الاختبارات...
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-8">
+            <button onclick="runTests()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+                🔄 إعادة تشغيل الاختبارات
+            </button>
+            <a href="index.html" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 mr-4">
+                🚀 فتح النظام الرئيسي
+            </a>
+        </div>
+    </div>
+
+    <!-- تحميل الملفات -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="supabase-integration.js"></script>
+    <script src="app.js"></script>
+
+    <script>
+        function setStatus(id, success, message = '') {
+            const element = document.getElementById(id);
+            if (success) {
+                element.className = 'w-4 h-4 rounded-full bg-green-500 mr-2';
+            } else {
+                element.className = 'w-4 h-4 rounded-full bg-red-500 mr-2';
+            }
+        }
+
+        function log(message) {
+            const results = document.getElementById('testResults');
+            results.innerHTML += message + '\n';
+        }
+
+        async function runTests() {
+            document.getElementById('testResults').innerHTML = 'بدء الاختبارات...\n';
+            
+            // اختبار تحميل الملفات
+            log('🔍 اختبار تحميل الملفات...');
+            
+            // مكتبة Supabase
+            const supabaseLoaded = typeof window.supabase !== 'undefined';
+            setStatus('supabaseLib', supabaseLoaded);
+            log(`- مكتبة Supabase: ${supabaseLoaded ? '✅ محملة' : '❌ غير محملة'}`);
+
+            // ملف supabase-config.js
+            const configLoaded = typeof SUPABASE_URL !== 'undefined';
+            setStatus('supabaseConfig', configLoaded);
+            log(`- ملف supabase-config.js: ${configLoaded ? '✅ محمل' : '❌ غير محمل'}`);
+
+            // ملف supabase-integration.js
+            const integrationLoaded = typeof initSupabase !== 'undefined';
+            setStatus('supabaseIntegration', integrationLoaded);
+            log(`- ملف supabase-integration.js: ${integrationLoaded ? '✅ محمل' : '❌ غير محمل'}`);
+
+            // ملف app.js
+            const appLoaded = typeof AppData !== 'undefined';
+            setStatus('appJs', appLoaded);
+            log(`- ملف app.js: ${appLoaded ? '✅ محمل' : '❌ غير محمل'}`);
+
+            // اختبار الوظائف
+            log('\n⚙️ اختبار الوظائف...');
+
+            // تهيئة Supabase
+            try {
+                const supabaseReady = await initSupabase();
+                setStatus('initSupabase', true);
+                log(`- تهيئة Supabase: ✅ ${supabaseReady ? 'جاهز' : 'غير مُعد (سيعمل محلياً)'}`);
+            } catch (error) {
+                setStatus('initSupabase', false);
+                log(`- تهيئة Supabase: ❌ خطأ - ${error.message}`);
+            }
+
+            // تحميل البيانات المحلية
+            try {
+                loadLocalData();
+                setStatus('loadLocalData', true);
+                log('- تحميل البيانات المحلية: ✅ نجح');
+            } catch (error) {
+                setStatus('loadLocalData', false);
+                log(`- تحميل البيانات المحلية: ❌ خطأ - ${error.message}`);
+            }
+
+            // تهيئة التطبيق
+            try {
+                initializeApp();
+                setStatus('initializeApp', true);
+                log('- تهيئة التطبيق: ✅ نجح');
+            } catch (error) {
+                setStatus('initializeApp', false);
+                log(`- تهيئة التطبيق: ❌ خطأ - ${error.message}`);
+            }
+
+            log('\n🎉 انتهت الاختبارات!');
+            log(`📊 إجمالي البيانات المحلية:`);
+            log(`   - السيارات: ${AppData.cars.length}`);
+            log(`   - الموظفين: ${AppData.employees.length}`);
+            log(`   - المصروفات: ${AppData.expenses.length}`);
+            log(`   - رصيد الخزينة: ${AppData.treasury.balance}`);
+        }
+
+        // تشغيل الاختبارات عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', runTests);
+    </script>
+</body>
+</html>

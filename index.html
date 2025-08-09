@@ -309,37 +309,55 @@
                 <div class="w-16 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto rounded-full"></div>
             </div>
 
-            <!-- تبويبات تسجيل الدخول -->
-            <div class="flex mb-6 bg-gray-100 rounded-lg p-1">
-                <button id="loginTab" class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors bg-white text-blue-600 shadow-sm">
-                    تسجيل الدخول
-                </button>
-                <button id="signupTab" class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors text-gray-600 hover:text-gray-900">
-                    إنشاء حساب
-                </button>
-            </div>
-
-            <!-- نموذج تسجيل الدخول -->
-            <form id="loginForm" class="space-y-4">
+            <!-- نموذج تسجيل الدخول التقليدي -->
+            <form id="traditionalLoginForm" class="space-y-6" onsubmit="handleLogin(event)">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        <i class="fas fa-envelope ml-2"></i>
-                        البريد الإلكتروني
-                    </label>
-                    <input type="email" id="loginEmail" class="form-input w-full" placeholder="أدخل بريدك الإلكتروني" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
                         <i class="fas fa-lock ml-2"></i>
                         كلمة المرور
                     </label>
-                    <input type="password" id="loginPassword" class="form-input w-full" placeholder="أدخل كلمة المرور" required>
+                    <input type="password" id="passwordInput" class="form-input w-full text-lg py-3" placeholder="أدخل كلمة المرور" required>
+                    <p class="text-xs text-gray-500 mt-1">كلمة المرور الافتراضية: 1234</p>
                 </div>
                 <button type="submit" class="btn-primary w-full py-3 text-lg font-semibold">
                     <i class="fas fa-sign-in-alt ml-2"></i>
-                    تسجيل الدخول
+                    دخول
                 </button>
             </form>
+
+            <!-- تبويبات تسجيل الدخول (Supabase) -->
+            <div id="supabaseTabs" class="mt-8 pt-6 border-t border-gray-200" style="display: none;">
+                <div class="flex mb-6 bg-gray-100 rounded-lg p-1">
+                    <button id="loginTab" class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors bg-white text-blue-600 shadow-sm">
+                        تسجيل الدخول
+                    </button>
+                    <button id="signupTab" class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors text-gray-600 hover:text-gray-900">
+                        إنشاء حساب
+                    </button>
+                </div>
+
+                <!-- نموذج تسجيل الدخول -->
+                <form id="loginForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            <i class="fas fa-envelope ml-2"></i>
+                            البريد الإلكتروني
+                        </label>
+                        <input type="email" id="loginEmail" class="form-input w-full" placeholder="أدخل بريدك الإلكتروني" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            <i class="fas fa-lock ml-2"></i>
+                            كلمة المرور
+                        </label>
+                        <input type="password" id="loginPassword" class="form-input w-full" placeholder="أدخل كلمة المرور" required>
+                    </div>
+                    <button type="submit" class="btn-primary w-full py-3 text-lg font-semibold">
+                        <i class="fas fa-sign-in-alt ml-2"></i>
+                        تسجيل الدخول
+                    </button>
+                </form>
+            </div>
 
             <!-- نموذج إنشاء حساب -->
             <form id="signupForm" class="space-y-4" style="display: none;">
@@ -2195,35 +2213,46 @@
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 بدء تهيئة النظام...');
 
-            // تهيئة Supabase
-            const supabaseReady = await initSupabase();
+            // تحميل البيانات المحلية أولاً
+            loadData();
 
-            if (supabaseReady && currentUser) {
-                // المستخدم مسجل دخول مسبقاً
-                console.log('✅ المستخدم مسجل دخول:', currentUser.email);
-                hideLoginForm();
+            // التحقق من حالة تسجيل الدخول المحلي
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
+            if (isLoggedIn) {
+                // المستخدم مسجل دخول محلياً
+                console.log('✅ المستخدم مسجل دخول محلياً');
                 showMainApp();
-                showSignOutButton();
-                await syncDataToSupabase();
-            } else if (supabaseReady) {
-                // Supabase جاهز لكن المستخدم غير مسجل دخول
-                console.log('🔐 عرض نماذج تسجيل الدخول');
-                showLoginForm();
-                hideMainApp();
-                hideSignOutButton();
+                hideLoginScreen();
+                initializeApp();
+
+                // محاولة تهيئة Supabase في الخلفية
+                try {
+                    const supabaseReady = await initSupabase();
+                    if (supabaseReady && currentUser) {
+                        console.log('✅ تم ربط Supabase أيضاً');
+                        showSignOutButton();
+                        await syncDataToSupabase();
+                    }
+                } catch (error) {
+                    console.log('⚠️ Supabase غير متاح، النظام يعمل محلياً');
+                }
             } else {
-                // Supabase غير مُعد - العمل محلياً
-                console.log('💻 العمل في الوضع المحلي');
-                hideLoginForm();
-                showMainApp();
-                hideSignOutButton();
+                // عرض شاشة الدخول التقليدية
+                console.log('🔐 عرض شاشة تسجيل الدخول');
+                showLoginScreen();
 
-                // تحميل البيانات المحلية
-                loadLocalData();
+                // محاولة تهيئة Supabase وإظهار خيارات إضافية
+                try {
+                    const supabaseReady = await initSupabase();
+                    if (supabaseReady) {
+                        document.getElementById('supabaseTabs').style.display = 'block';
+                        console.log('✅ خيارات Supabase متاحة');
+                    }
+                } catch (error) {
+                    console.log('⚠️ Supabase غير متاح');
+                }
             }
-
-            // تهيئة باقي النظام
-            initializeApp();
 
             console.log('✅ تم تهيئة النظام بنجاح');
         });

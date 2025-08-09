@@ -143,6 +143,9 @@ function handleLogin(event) {
     // محاكاة تأخير للتحقق
     setTimeout(() => {
         if (password === DEFAULT_PASSWORD) {
+            // حفظ حالة تسجيل الدخول
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('loginTime', new Date().toISOString());
             AppData.settings.lastLogin = new Date().toISOString();
             saveData();
 
@@ -150,7 +153,9 @@ function handleLogin(event) {
             showSuccessMessage('تم تسجيل الدخول بنجاح!');
 
             setTimeout(() => {
+                hideLoginScreen();
                 showMainApp();
+                initializeApp();
             }, 1000);
         } else {
             // إظهار رسالة خطأ
@@ -167,9 +172,41 @@ function handleLogin(event) {
 
 // عرض شاشة الدخول
 function showLoginScreen() {
-    document.getElementById('loginScreen').classList.remove('hidden');
-    document.getElementById('mainApp').classList.add('hidden');
-    document.getElementById('passwordInput').focus();
+    const loginScreen = document.getElementById('loginScreen');
+    const mainApp = document.getElementById('mainApp');
+
+    if (loginScreen) {
+        loginScreen.style.display = 'flex';
+        loginScreen.classList.remove('hidden');
+    }
+    if (mainApp) {
+        mainApp.style.display = 'none';
+        mainApp.classList.add('hidden');
+    }
+
+    // التركيز على حقل كلمة المرور إذا كان موجوداً
+    const passwordInput = document.getElementById('passwordInput');
+    if (passwordInput) {
+        setTimeout(() => passwordInput.focus(), 100);
+    }
+}
+
+// إخفاء شاشة الدخول
+function hideLoginScreen() {
+    const loginScreen = document.getElementById('loginScreen');
+    if (loginScreen) {
+        loginScreen.style.display = 'none';
+        loginScreen.classList.add('hidden');
+    }
+}
+
+// عرض التطبيق الرئيسي
+function showMainApp() {
+    const mainApp = document.getElementById('mainApp');
+    if (mainApp) {
+        mainApp.style.display = 'block';
+        mainApp.classList.remove('hidden');
+    }
 }
 
 // عرض التطبيق الرئيسي
@@ -218,7 +255,14 @@ function updateDateTime() {
 // تسجيل الخروج
 function logout() {
     if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+        // حذف حالة تسجيل الدخول
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('loginTime');
+
+        // إخفاء التطبيق وعرض شاشة الدخول
         showLoginScreen();
+
+        showInfoMessage('تم تسجيل الخروج بنجاح');
     }
 }
 

@@ -124,9 +124,14 @@
 
             // تهيئة Supabase
             try {
-                const supabaseReady = await initSupabase();
-                setStatus('initSupabase', true);
-                log(`- تهيئة Supabase: ✅ ${supabaseReady ? 'جاهز' : 'غير مُعد (سيعمل محلياً)'}`);
+                if (typeof initSupabase !== 'undefined') {
+                    const supabaseReady = await initSupabase();
+                    setStatus('initSupabase', true);
+                    log(`- تهيئة Supabase: ✅ ${supabaseReady ? 'جاهز' : 'غير مُعد (سيعمل محلياً)'}`);
+                } else {
+                    setStatus('initSupabase', false);
+                    log('- تهيئة Supabase: ❌ الوظيفة غير موجودة');
+                }
             } catch (error) {
                 setStatus('initSupabase', false);
                 log(`- تهيئة Supabase: ❌ خطأ - ${error.message}`);
@@ -134,9 +139,16 @@
 
             // تحميل البيانات المحلية
             try {
-                loadLocalData();
-                setStatus('loadLocalData', true);
-                log('- تحميل البيانات المحلية: ✅ نجح');
+                if (typeof loadLocalData !== 'undefined') {
+                    loadLocalData();
+                    setStatus('loadLocalData', true);
+                    log('- تحميل البيانات المحلية: ✅ نجح');
+                } else {
+                    // استخدام loadData بدلاً من ذلك
+                    loadData();
+                    setStatus('loadLocalData', true);
+                    log('- تحميل البيانات المحلية: ✅ نجح (loadData)');
+                }
             } catch (error) {
                 setStatus('loadLocalData', false);
                 log(`- تحميل البيانات المحلية: ❌ خطأ - ${error.message}`);
@@ -144,9 +156,14 @@
 
             // تهيئة التطبيق
             try {
-                initializeApp();
-                setStatus('initializeApp', true);
-                log('- تهيئة التطبيق: ✅ نجح');
+                if (typeof initializeApp !== 'undefined') {
+                    initializeApp();
+                    setStatus('initializeApp', true);
+                    log('- تهيئة التطبيق: ✅ نجح');
+                } else {
+                    setStatus('initializeApp', false);
+                    log('- تهيئة التطبيق: ❌ الوظيفة غير موجودة');
+                }
             } catch (error) {
                 setStatus('initializeApp', false);
                 log(`- تهيئة التطبيق: ❌ خطأ - ${error.message}`);
